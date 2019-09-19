@@ -31,6 +31,9 @@ class Maze(tk.Tk):
         self.circular = self.cv.create_oval((START_TOP_X, START_TOP_Y),(START_DOWN_X, START_DOWN_Y), width=0,fill='yellow')
         self.cv.create_rectangle((120, 120), (150, 150), width=0, fill='red')
         self.cv.create_rectangle((120, 60), (150, 90), width=0, fill='black')
+        self.cv.create_rectangle((90, 60), (120, 90), width=0, fill='black')
+        self.cv.create_rectangle((60, 60), (90, 90), width=0, fill='black')
+        self.cv.create_rectangle((30, 60), (60, 90), width=0, fill='black')
         # self.cv.create_rectangle((120, 120), (150, 150), width=0, fill='black')
         self.cv.pack()
 
@@ -64,7 +67,7 @@ class Maze(tk.Tk):
             reward = 1
             state = 'terminal'
             done = True
-        elif self.current_position == [120, 60, 150, 90]:
+        elif self.current_position == [120, 60, 150, 90] or self.current_position == [90, 60, 120, 90] or self.current_position == [60, 60, 90, 90] or self.current_position == [30, 60, 60, 90]:
             reward = -1
             state = 'terminal'
             done = True

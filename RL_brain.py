@@ -1,51 +1,53 @@
-"""
-This part of code is the Q learning brain, which is a brain of the agent.
-All decisions are made in here.
-
-View more on my tutorial page: https://morvanzhou.github.io/tutorials/
-"""
-
 import numpy as np
 import pandas as pd
 
 
-class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=0.9, e_greedy=0.9):
-        self.actions = actions  # a list
-        self.lr = learning_rate
-        self.gamma = reward_decay
-        self.epsilon = e_greedy
-        self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float64)
+class QTable:
+    def __init__(self, actions):
+        self.action = actions
+        self.lr = 0.01
+        self.gamma = 0.9
+        self.epsilon = 0.9
+        self.Q_Table = pd.DataFrame(columns=self.action, dtype=np.float64)
 
-    def choose_action(self, observation):
-        self.check_state_exist(observation)
-        # action selection
+    def choose_action(self, state):
+        self.check_state_exist(state)
         if np.random.uniform() < self.epsilon:
-            # choose best action
-            state_action = self.q_table.loc[observation, :]
-            # some actions may have the same value, randomly choose on in these actions
+            state_action = self.Q_Table.loc[state]
             action = np.random.choice(state_action[state_action == np.max(state_action)].index)
         else:
-            # choose random action
-            action = np.random.choice(self.actions)
+            action = np.random.choice(self.action)
         return action
 
-    def learn(self, s, a, r, s_):
-        self.check_state_exist(s_)
-        q_predict = self.q_table.loc[s, a]
-        if s_ != 'terminal':
-            q_target = r + self.gamma * self.q_table.loc[s_, :].max()  # next state is not terminal
+    def learn(self, state, action, reward, next_state):
+        self.check_state_exist(next_state)
+        predict = self.Q_Table.loc[state, action]
+        if next_state != 'terminal':
+            target = reward + self.gamma * self.Q_Table.loc[next_state].max()
         else:
-            q_target = r  # next state is terminal
-        self.q_table.loc[s, a] += self.lr * (q_target - q_predict)  # update
+            target = reward
+        self.Q_Table.loc[state, action] += self.lr * (target - predict)
 
     def check_state_exist(self, state):
-        if state not in self.q_table.index:
-            # append new state to q table
-            self.q_table = self.q_table.append(
+        if state not in self.Q_Table.index:
+            self.Q_Table = self.Q_Table.append(
                 pd.Series(
-                    [0]*len(self.actions),
-                    index=self.q_table.columns,
+                    [0] * len(self.action),
+                    index=self.Q_Table.columns,
                     name=state,
                 )
             )
+
+# if __name__ == '__main__':
+#     data = {'state': [1.5, 1.7, 3.6, 2.4, 2.9, 3.2],
+#             'year': [2000, 2001, 2002, 2001, 2001, 2003],
+#             'pop': [1.5, 1.7, 3.6, 2.4, 2.9, 3.2]}
+#     test_table = pd.DataFrame(data)
+#     state = test_table[0:1]
+#     print(state[state == np.max(state)])
+#     # print(test_table[0:1])
+#     # s = pd.Series([1, 2, 3, 4, 5], index = ['a', 'b', 'c', 'f', 'e'])
+#     # print(s)
+#     # print(s.max())
+#     # QT = QTable('d')
+#     # QT.check_state_exist('[0, 0, 30, 30]')

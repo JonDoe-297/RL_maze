@@ -1,13 +1,13 @@
 import copy
 from maze_env import Maze
-from RL_brain import QLearningTable
+from RL_brain import QTable
 
 
 def update():
-    for episode in range(100):
+    for episode in range(50):
         observation = env.reset_circular()
         # print(observation)
-
+        print(str(episode) + ':')
         while True:
             env.render()
             action = RL.choose_action(str(observation))
@@ -29,6 +29,7 @@ def update():
             # break while loop when end of this episode
             if done:
                 break
+        print(RL.Q_Table)
 
     # end of game
     print('game over')
@@ -36,7 +37,7 @@ def update():
 
 if __name__ == "__main__":
     env = Maze()
-    RL = QLearningTable(actions=list(range(env.n_actions)))
+    RL = QTable(actions=list(range(env.n_actions)))
 
     env.after(100, update)
     env.mainloop()
